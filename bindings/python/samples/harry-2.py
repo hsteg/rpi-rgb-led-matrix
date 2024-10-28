@@ -46,7 +46,7 @@ red = graphics.Color(213, 0, 0)
 yellow = graphics.Color(201, 181, 0)
 
 def run():
-    matrix.brightness = 20
+    matrix.brightness = 40
     transit_times = get_transit()
     matrix.Clear()
     if transit_times:
