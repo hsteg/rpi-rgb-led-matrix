@@ -3,7 +3,9 @@
 import time
 import sys
 import requests
+import json
 from datetime import datetime
+
 from rgbmatrix import RGBMatrix, RGBMatrixOptions, graphics
 
 # Configuration for the matrix
@@ -20,132 +22,134 @@ def configure_matrix():
 
 matrix = configure_matrix()
 
-# Font loading
-def load_fonts():
-    fonts = {
-        "big": "../../../fonts/10x20.bdf",
-        "medium_big": "../../../fonts/7x13B.bdf",
-        "medium": "../../../fonts/6x9.bdf",
-        "small": "../../../fonts/5x7.bdf"
-    }
-    return {key: graphics.Font().LoadFont(font_path) for key, font_path in fonts.items()}
+big_font = graphics.Font()
+big_font.LoadFont("../../../fonts/10x20.bdf")
 
-fonts = load_fonts()
+medium_big_font = graphics.Font()
+medium_big_font.LoadFont("../../../fonts/7x13B.bdf")
 
-# Define colors
-colors = {
-    "mta_g_green": graphics.Color(108, 190, 69),
-    "white": graphics.Color(255, 255, 255),
-    "half_white": graphics.Color(126, 126, 126),
-    "another_white": graphics.Color(50, 50, 50),
-    "orange": graphics.Color(194, 89, 29),
-    "purple": graphics.Color(78, 0, 130),
-    "red": graphics.Color(213, 0, 0),
-    "yellow": graphics.Color(201, 181, 0)
-}
+medium_font = graphics.Font()
+medium_font.LoadFont("../../../fonts/6x9.bdf")
 
-# Main function to handle transit updates and drawing
+small_font = graphics.Font()
+small_font.LoadFont("../../../fonts/5x7.bdf")
+
+mta_g_green = graphics.Color(108, 190, 69)
+white = graphics.Color(255, 255, 255)
+half_white = graphics.Color(126, 126, 126)
+another_white = graphics.Color(50, 50, 50)
+orange = graphics.Color(194, 89, 29)
+purple = graphics.Color(78, 0, 130)
+red = graphics.Color(213, 0, 0)
+yellow = graphics.Color(201, 181, 0)
+
 def run():
-    matrix.Clear()
     transit_times = get_transit()
+    matrix.Clear()
     if transit_times:
         draw_dividing_lines()
-        draw_trains(transit_times.get("train", {}))
-        draw_bus(transit_times.get("bus", []))
+        draw_trains(transit_times["train"])
+        draw_bus(transit_times["bus"])
     else:
         draw_error(95, 16)
+    # draw_trains({ 'n': [4, 13], 's': [2, 18] })
+    # draw_bus([3, 10, 29])
 
-# Helper function to fetch transit data
-def get_transit():
-    try:
-        response = requests.get('https://funmirror-server.herokuapp.com/led-sign-transit')
-        response.raise_for_status()
-        return response.json()
-    except requests.RequestException:
-        return None
-
-# Drawing functions
 def draw_error(x, y):
-    draw_face(x, y)
-    graphics.DrawText(matrix, fonts["big"], 39, 23, colors["half_white"], "ERROR")
+    draw_face(17, 16)
+    graphics.DrawText(matrix, big_font, 39, 23, half_white, "ERROR")
     draw_face(110, 16)
 
 def draw_face(x, y):
-    graphics.DrawCircle(matrix, x, y, 14, colors["yellow"])
-    for offset in [-5, 5]:
-        graphics.DrawLine(matrix, x + offset, y - 4, x + offset + 1, y - 4, colors["half_white"])
-    graphics.DrawLine(matrix, x - 5, y + 5, x + 5, y + 5, colors["half_white"])
-
-def draw_dividing_lines():
-    graphics.DrawLine(matrix, 0, 16, 88, 16, colors["another_white"])
-    graphics.DrawLine(matrix, 88, 0, 88, 32, colors["another_white"])
+    graphics.DrawCircle(matrix, x, y, 14, yellow)
+    graphics.DrawLine(matrix, x - 5, y - 4, x - 4, y - 4, half_white)
+    graphics.DrawLine(matrix, x + 4, y - 4, x + 5, y - 4, half_white)
+    graphics.DrawLine(matrix, x - 5, y + 5, x + 5, y + 5, half_white)
 
 def draw_trains(train_times):
     draw_mta_g()
     draw_station_names()
-    if train_times:
-        draw_station_times(train_times.get("n", []), draw_court_sq_times)
-        draw_station_times(train_times.get("s", []), draw_church_ave_times)
+    if len(train_times) > 0:
+        draw_court_sq_times(str(train_times["n"][0]), str(train_times["n"][1]))
+        draw_church_ave_times(str(train_times["s"][0]), str(train_times["s"][1]))
     else:
-        draw_no_transit_icon(78, 7)
-        draw_no_transit_icon(78, 24)
+        new_draw_no_transit(78, 7)
+        new_draw_no_transit(78, 24)
 
-def draw_station_times(times, draw_function):
-    if len(times) >= 2:
-        draw_function(times[0], times[1])
+def new_draw_no_transit(x, y):
+    graphics.DrawCircle(matrix, x, y, 6, red)
+    graphics.DrawLine(matrix, x - 4, y + 4, x + 4, y - 4, red)
 
 def draw_bus(bus_times):
     draw_bus_name()
-    if bus_times:
+    if len(bus_times) > 0:
         draw_bus_times(bus_times)
     else:
-        draw_no_transit_icon(120, 24)
+        new_draw_no_transit(120, 24)
 
-def draw_mta_g():
-    for y in [14, 31]:
-        graphics.DrawText(matrix, fonts["big"], 0, y, colors["mta_g_green"], "G")
-
-def draw_station_names():
-    graphics.DrawText(matrix, fonts["medium_big"], 13, 12, colors["half_white"], "Court")
-    graphics.DrawText(matrix, fonts["medium_big"], 13, 29, colors["half_white"], "Church")
+def get_transit():
+    transit_times = requests.get('https://funmirror-server.herokuapp.com/led-sign-transit')
+    if transit_times.status_code == 200:
+        return transit_times.json()
+    else:
+        return False
 
 def draw_bus_name():
-    graphics.DrawText(matrix, fonts["medium_big"], 107, 10, colors["purple"], "B62")
+    graphics.DrawText(matrix, medium_big_font, 107, 10, purple, "B62")
 
 def draw_bus_times(b62_times):
-    y_coords = {1: 24, 2: 17, 3: 10}
-    y_coord_base = y_coords.get(len(b62_times), 10)
+    time_base_x_coord = 100
+    time_base_y_coord = 31
+    y_coords = [24, 17, 10]
+    y_coord_base = y_coords[len(b62_times) - 1]
+
     for i, mins in enumerate(b62_times, start=1):
-        draw_time(mins, 100, y_coord_base + (i * 7))
+        mins_str = str(mins)
+        graphics.DrawText(matrix, medium_font,time_base_x_coord + x_coord_time_offset(mins_str), y_coord_base + (i * 7), white, mins_str)
+        graphics.DrawText(matrix, small_font, time_base_x_coord + 13, y_coord_base + (i * 7), orange, "min")
 
-def draw_time(mins, x, y):
-    mins_str = str(mins)
-    graphics.DrawText(matrix, fonts["medium"], x + x_coord_time_offset(mins_str), y, colors["white"], mins_str)
-    graphics.DrawText(matrix, fonts["small"], x + 13, y, colors["orange"], "min")
+def draw_mta_g():
+    graphics.DrawText(matrix, big_font, 0, 14, mta_g_green, "G")
+    graphics.DrawText(matrix, big_font, 0, 31, mta_g_green, "G")
 
-def draw_court_sq_times(first_time, second_time):
-    draw_times(first_time, second_time, 60, [7, 15])
+def draw_station_names():
+    graphics.DrawText(matrix, medium_big_font, 13, 12, half_white, "Court")
+    graphics.DrawText(matrix, medium_big_font, 13, 29, half_white, "Church")
 
-def draw_church_ave_times(first_time, second_time):
-    draw_times(first_time, second_time, 60, [23, 31])
+def draw_dividing_lines():
+    graphics.DrawLine(matrix, 0, 16, 88, 16, another_white)
+    graphics.DrawLine(matrix, 88, 0, 88, 32, another_white)
 
-def draw_times(first, second, x, y_coords):
-    for time, y in zip([first, second], y_coords):
-        draw_time(time, x, y)
+def draw_court_sq_times(first_court_g, second_court_g):
+    time_base_x_coord = 60
 
-def draw_no_transit_icon(x, y):
-    graphics.DrawCircle(matrix, x, y, 6, colors["red"])
-    graphics.DrawLine(matrix, x - 4, y + 4, x + 4, y - 4, colors["red"])
+    graphics.DrawText(matrix, medium_font, time_base_x_coord + x_coord_time_offset(first_court_g), 7, white, first_court_g)
+    graphics.DrawText(matrix, medium_font, time_base_x_coord + x_coord_time_offset(second_court_g), 15, white, second_court_g)
+
+    graphics.DrawText(matrix, small_font, time_base_x_coord + 13, 7, orange, "min")
+    graphics.DrawText(matrix, small_font, time_base_x_coord + 13, 15, orange, "min")
+
+def draw_church_ave_times(first_church_g, second_church_g):
+    time_base_x_coord = 60
+
+    graphics.DrawText(matrix, medium_font, time_base_x_coord + x_coord_time_offset(first_church_g), 23, white, first_church_g)
+    graphics.DrawText(matrix, medium_font, time_base_x_coord + x_coord_time_offset(second_church_g), 31, white, second_church_g)
+
+    graphics.DrawText(matrix, small_font, time_base_x_coord + 13, 23, orange, "min")
+    graphics.DrawText(matrix, small_font, time_base_x_coord + 13, 31, orange, "min")
 
 def x_coord_time_offset(mins):
-    return 6 if len(mins) == 1 else 0
+    if len(mins) == 1:
+        return 6
+    else:
+        return 0
 
-# Main loop
-if __name__ == "__main__":
-    try:
-        print("Press CTRL-C to stop.")
-        while True:
-            run()
-            time.sleep(30)
-    except KeyboardInterrupt:
-        sys.exit(0)
+try:
+    print("Press CTRL-C to stop.")
+    while True:
+        run()
+        time.sleep(30)
+
+except KeyboardInterrupt:
+    sys.exit(0)
+
