@@ -45,8 +45,7 @@ red = graphics.Color(213, 0, 0)
 yellow = graphics.Color(201, 181, 0)
 
 def run():
-    matrix = configure_matrix()
-    print("Current Time:", datetime.now())
+    matrix.brightness = 10
     transit_times = get_transit()
     matrix.Clear()
     if transit_times:
