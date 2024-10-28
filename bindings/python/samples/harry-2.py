@@ -13,8 +13,8 @@ def configure_matrix():
     options = RGBMatrixOptions()
     options.rows = 32
     options.cols = 64
-    options.chain_length = 2
-    options.gpio_slowdown = 2
+    options.chain_length = 4
+    options.gpio_slowdown = 4
     options.brightness = 75
     options.parallel = 1
     options.hardware_mapping = "adafruit-hat"
