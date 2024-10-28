@@ -19,6 +19,7 @@ def configure_matrix():
     options.parallel = 1
     options.pwm_dither_bits = 1
     options.hardware_mapping = "adafruit-hat"
+    options.show_refresh_rate = True
     return RGBMatrix(options=options)
 
 matrix = configure_matrix()
