@@ -22,16 +22,17 @@ def configure_matrix():
 
 matrix = configure_matrix()
 
-def load_fonts():
-    fonts = {
-        "big": "../../../fonts/10x20.bdf",
-        "medium_big": "../../../fonts/7x13B.bdf",
-        "medium": "../../../fonts/6x9.bdf",
-        "small": "../../../fonts/5x7.bdf"
-    }
-    return {key: graphics.Font().LoadFont(font_path) for key, font_path in fonts.items()}
+big_font = graphics.Font()
+big_font.LoadFont("../../../fonts/10x20.bdf")
 
-fonts = load_fonts()
+medium_big_font = graphics.Font()
+medium_big_font.LoadFont("../../../fonts/7x13B.bdf")
+
+medium_font = graphics.Font()
+medium_font.LoadFont("../../../fonts/6x9.bdf")
+
+small_font = graphics.Font()
+small_font.LoadFont("../../../fonts/5x7.bdf")
 
 mta_g_green = graphics.Color(108, 190, 69)
 white = graphics.Color(255, 255, 255)
@@ -56,7 +57,7 @@ def run():
 
 def draw_error(x, y):
     draw_face(17, 16)
-    graphics.DrawText(matrix, fonts["big"], 39, 23, half_white, "ERROR")
+    graphics.DrawText(matrix, big_font, 39, 23, half_white, "ERROR")
     draw_face(110, 16)
 
 def draw_face(x, y):
@@ -94,7 +95,7 @@ def get_transit():
         return False
 
 def draw_bus_name():
-    graphics.DrawText(matrix, fonts["medium_big"], 107, 10, purple, "B62")
+    graphics.DrawText(matrix, medium_big_font, 107, 10, purple, "B62")
 
 def draw_bus_times(b62_times):
     time_base_x_coord = 100
@@ -104,16 +105,16 @@ def draw_bus_times(b62_times):
 
     for i, mins in enumerate(b62_times, start=1):
         mins_str = str(mins)
-        graphics.DrawText(matrix, fonts["medium"], time_base_x_coord + x_coord_time_offset(mins_str), y_coord_base + (i * 7), white, mins_str)
-        graphics.DrawText(matrix, fonts["small"], time_base_x_coord + 13, y_coord_base + (i * 7), orange, "min")
+        graphics.DrawText(matrix, medium_font,time_base_x_coord + x_coord_time_offset(mins_str), y_coord_base + (i * 7), white, mins_str)
+        graphics.DrawText(matrix, small_font, time_base_x_coord + 13, y_coord_base + (i * 7), orange, "min")
 
 def draw_mta_g():
-    graphics.DrawText(matrix, fonts["big"], 0, 14, mta_g_green, "G")
-    graphics.DrawText(matrix, fonts["big"], 0, 31, mta_g_green, "G")
+    graphics.DrawText(matrix, big_font, 0, 14, mta_g_green, "G")
+    graphics.DrawText(matrix, big_font, 0, 31, mta_g_green, "G")
 
 def draw_station_names():
-    graphics.DrawText(matrix, fonts["medium_big"], 13, 12, half_white, "Court")
-    graphics.DrawText(matrix, fonts["medium_big"], 13, 29, half_white, "Church")
+    graphics.DrawText(matrix, medium_big_font, 13, 12, half_white, "Court")
+    graphics.DrawText(matrix, medium_big_font, 13, 29, half_white, "Church")
 
 def draw_dividing_lines():
     graphics.DrawLine(matrix, 0, 16, 88, 16, another_white)
@@ -122,20 +123,20 @@ def draw_dividing_lines():
 def draw_court_sq_times(first_court_g, second_court_g):
     time_base_x_coord = 60
 
-    graphics.DrawText(matrix, fonts["medium"], time_base_x_coord + x_coord_time_offset(first_court_g), 7, white, first_court_g)
-    graphics.DrawText(matrix, fonts["medium"], time_base_x_coord + x_coord_time_offset(second_court_g), 15, white, second_court_g)
+    graphics.DrawText(matrix, medium_font, time_base_x_coord + x_coord_time_offset(first_court_g), 7, white, first_court_g)
+    graphics.DrawText(matrix, medium_font, time_base_x_coord + x_coord_time_offset(second_court_g), 15, white, second_court_g)
 
-    graphics.DrawText(matrix, fonts["small"], time_base_x_coord + 13, 7, orange, "min")
-    graphics.DrawText(matrix, fonts["small"], time_base_x_coord + 13, 15, orange, "min")
+    graphics.DrawText(matrix, small_font, time_base_x_coord + 13, 7, orange, "min")
+    graphics.DrawText(matrix, small_font, time_base_x_coord + 13, 15, orange, "min")
 
 def draw_church_ave_times(first_church_g, second_church_g):
     time_base_x_coord = 60
 
-    graphics.DrawText(matrix, fonts["medium"], time_base_x_coord + x_coord_time_offset(first_church_g), 23, white, first_church_g)
-    graphics.DrawText(matrix, fonts["medium"], time_base_x_coord + x_coord_time_offset(second_church_g), 31, white, second_church_g)
+    graphics.DrawText(matrix, medium_font, time_base_x_coord + x_coord_time_offset(first_church_g), 23, white, first_church_g)
+    graphics.DrawText(matrix, medium_font, time_base_x_coord + x_coord_time_offset(second_church_g), 31, white, second_church_g)
 
-    graphics.DrawText(matrix, fonts["small"], time_base_x_coord + 13, 23, orange, "min")
-    graphics.DrawText(matrix, fonts["small"], time_base_x_coord + 13, 31, orange, "min")
+    graphics.DrawText(matrix, small_font, time_base_x_coord + 13, 23, orange, "min")
+    graphics.DrawText(matrix, small_font, time_base_x_coord + 13, 31, orange, "min")
 
 def x_coord_time_offset(mins):
     if len(mins) == 1:
