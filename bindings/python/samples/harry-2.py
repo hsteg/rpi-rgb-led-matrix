@@ -14,7 +14,7 @@ def configure_matrix():
     options.rows = 32
     options.cols = 64
     options.chain_length = 2
-    options.gpio_slowdown = 5
+    options.gpio_slowdown = 1
     options.brightness = 75
     options.parallel = 1
     options.hardware_mapping = "adafruit-hat"
