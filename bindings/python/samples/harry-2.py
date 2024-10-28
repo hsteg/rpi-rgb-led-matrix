@@ -52,8 +52,6 @@ def run():
         draw_bus(transit_times["bus"])
     else:
         draw_error(95, 16)
-    # draw_trains({ 'n': [4, 13], 's': [2, 18] })
-    # draw_bus([3, 10, 29])
 
 def draw_error(x, y):
     draw_face(17, 16)
@@ -105,7 +103,7 @@ def draw_bus_times(b62_times):
 
     for i, mins in enumerate(b62_times, start=1):
         mins_str = str(mins)
-        graphics.DrawText(matrix, medium_font,time_base_x_coord + x_coord_time_offset(mins_str), y_coord_base + (i * 7), white, mins_str)
+        graphics.DrawText(matrix, medium_font, time_base_x_coord + x_coord_time_offset(mins_str), y_coord_base + (i * 7), white, mins_str)
         graphics.DrawText(matrix, small_font, time_base_x_coord + 13, y_coord_base + (i * 7), orange, "min")
 
 def draw_mta_g():
