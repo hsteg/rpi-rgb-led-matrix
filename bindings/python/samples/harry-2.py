@@ -10,7 +10,6 @@ from rgbmatrix import RGBMatrix, RGBMatrixOptions, graphics
 
 # Configuration for the matrix
 def configure_matrix():
-    print("in here again")
     options = RGBMatrixOptions()
     options.rows = 32
     options.cols = 64
@@ -19,6 +18,7 @@ def configure_matrix():
     options.brightness = 75
     options.parallel = 1
     options.hardware_mapping = "adafruit-hat"
+    options.isolcpus=3
     return RGBMatrix(options=options)
 
 matrix = configure_matrix()
