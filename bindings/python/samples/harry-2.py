@@ -18,7 +18,7 @@ def configure_matrix():
     options.brightness = 75
     options.parallel = 1
     options.pwm_dither_bits = 1
-    options.hardware_mapping = "adafruit-hat-pwm"
+    options.hardware_mapping = "adafruit-hat"
     options.limit_refresh_rate_hz = 500
     return RGBMatrix(options=options)
 
