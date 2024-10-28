@@ -17,6 +17,7 @@ def configure_matrix():
     options.gpio_slowdown = 4
     options.brightness = 75
     options.parallel = 1
+    options.pwm_dither_bits = 1
     options.hardware_mapping = "adafruit-hat"
     return RGBMatrix(options=options)
 
