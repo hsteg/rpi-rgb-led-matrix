@@ -18,7 +18,7 @@ def configure_matrix():
     options.brightness = 75
     options.parallel = 1
     options.hardware_mapping = "adafruit-hat"
-    options.multiplexing = 3
+    options.multiplexing = 4
     return RGBMatrix(options=options)
 
 matrix = configure_matrix()
