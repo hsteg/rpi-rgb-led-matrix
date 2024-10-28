@@ -10,6 +10,7 @@ from rgbmatrix import RGBMatrix, RGBMatrixOptions, graphics
 
 # Configuration for the matrix
 def configure_matrix():
+    print("in here again")
     options = RGBMatrixOptions()
     options.rows = 32
     options.cols = 64
@@ -147,7 +148,7 @@ try:
     print("Press CTRL-C to stop.")
     while True:
         run()
-        time.sleep(30)
+        time.sleep(10)
 
 except KeyboardInterrupt:
     sys.exit(0)
