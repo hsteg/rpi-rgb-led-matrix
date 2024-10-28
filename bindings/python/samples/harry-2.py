@@ -14,7 +14,7 @@ def configure_matrix():
     options.rows = 32
     options.cols = 64
     options.chain_length = 2
-    options.gpio_slowdown = 1
+    options.gpio_slowdown = 4
     options.brightness = 75
     options.parallel = 1
     options.hardware_mapping = "adafruit-hat"
@@ -44,7 +44,7 @@ red = graphics.Color(213, 0, 0)
 yellow = graphics.Color(201, 181, 0)
 
 def run():
-    matrix.brightness = 5
+    matrix.brightness = 75
     transit_times = get_transit()
     matrix.Clear()
     if transit_times:
